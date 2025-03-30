@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Quiz</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: pink;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 10px;
+
+            overflow: hidden;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            width: 400px;
+        }
+
+        button {
+            margin: 10px;
+            padding: 12px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            background: purple;
+            color: white;
+        }
+
+        .message {
+            font-size: 20px;
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .heart {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            background-color: red;
+            margin: 20px auto;
+            transform: rotate(-45deg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .heart:before,
+        .heart:after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background-color: red;
+            border-radius: 50%;
+        }
+
+        .heart:before {
+            top: -125px;
+            left: 0;
+        }
+
+        .heart:after {
+            left: 125px;
+            top: 0;
+        }
+
+        .emessage {
+            position: absolute;
+            width: 180px;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: rotate(45deg);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            word-wrap: break-word;
+            z-index: 100;
+        }
+
+        .scratch-card {
+            position: relative;
+            width: 300px;
+            height: 150px;
+            background: white;
+            color: gray;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+    </style>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
+    <script type="text/javascript">
+        (function () {
+            emailjs.init({
+                publicKey: "vrIIJWRRtU8UULAQa",
+            });
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="container" id="quiz-container">
+        <h2 id="question"></h2>
+        <button id="option1" onclick="checkAnswer(0)"></button>
+        <button id="option2" onclick="checkAnswer(1)"></button>
+        <div class="message" id="wrong-message">Wrong! 😢</div>
+    </div>
+
+    <button class="reward-button" onclick="showReward()"
+        style="display: none; position: absolute; bottom: 20px; width: 100%; padding: 15px 25px; font-size: 18px; background: gold; color: black; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; z-index: 120;">Rewards</button>
+
+    <script>
+        const questions = [
+            { q: "Where did we first meet?", options: ["Weabel", "Train"], answer: 0 },
+            { q: "What food did you first feed me by your own hand?", options: ["Gajorer Porota", "Cake"], answer: 0 },
+            { q: "Who said 'I love you' first?", options: ["Chitra", "Kuki"], answer: 0 },
+            { q: "What was the first gift I gave you?", options: ["Pen", "Kish"], answer: 0 },
+            { q: "Where did we first kish?", options: ["Jolar Dhare", "Home"], answer: 0 },
+            { q: "Which part of your body do I like the most?", options: ["Boobs", "Back Pod"], answer: 1 },
+            { q: "In which dress do I want to see you on our Fulsojja?", options: ["Only T-Shirt", "Net Night Dress"], answer: 0 },
+            { q: "What food do I want to feed you?", options: ["Korola", "Samiran"], answer: 0 },
+            { q: "What do I love most?", options: ["Soma", "Computer"], answer: 0 },
+            { q: "Do I love you more than you???", options: ["Yes", "No"], answer: 0 }
+        ];
+
+        let currentQuestion = 0;
+        let correctAnswers = 0;
+
+        function loadQuestion() {
+            if (currentQuestion < questions.length) {
+                document.getElementById("question").textContent = questions[currentQuestion].q;
+                document.getElementById("option1").textContent = questions[currentQuestion].options[0];
+                document.getElementById("option2").textContent = questions[currentQuestion].options[1];
+                document.getElementById("wrong-message").style.display = "none";
+                document.getElementById("question").style.display = "block";
+                document.getElementById("option1").style.display = "block";
+                document.getElementById("option2").style.display = "block";
+            } else {
+                document.getElementById("quiz-container").innerHTML = "<div class='heart'><div class='emessage'>I am really sorry baby. My head was not working. I am really sorry. I only love you, only you. I love you so much. And I am sorry. ❤️😘</div></div>";
+                document.querySelector(".reward-button").style.display = "block";
+            }
+        }
+
+        function checkAnswer(selected) {
+            if (selected === questions[currentQuestion].answer) {
+                correctAnswers++;
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                document.getElementById("question").style.display = "none";
+                document.getElementById("option1").style.display = "none";
+                document.getElementById("option2").style.display = "none";
+                document.getElementById("wrong-message").style.display = "block";
+                setTimeout(() => {
+                    currentQuestion++;
+                    loadQuestion();
+                }, 2000);
+            }
+        }
+
+        function showReward() {
+            document.body.innerHTML = `<div class='scratch-card'>
+                <canvas id='scratchCanvas'></canvas>
+                <div id='reward-message' style='position: absolute;'>Your reward: ${correctAnswers * 5}</div>
+                <button style='position: absolute; width: 100%; bottom:0px; background: blue;' onclick="sendEmail()">Sand</button>
+            </div>`;
+            createScratchEffect();
+        }
+
+        function sendEmail() {
+            emailjs.send("service_61j04re", "template_s6buuu9", {
+                user_name: "Soma",
+                user_email: "maitysamiran442@gmail.com",
+                message: correctAnswers * 5,
+            });
+        }
+
+        // function createScratchEffect() {
+        //     const canvas = document.getElementById("scratchCanvas");
+        //     const ctx = canvas.getContext("2d");
+        //     canvas.width = 300;
+        //     canvas.height = 150;
+        //     ctx.fillStyle = "gray";
+        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        //     let isDrawing = false;
+        //     canvas.addEventListener("mousedown", () => isDrawing = true);
+        //     canvas.addEventListener("mouseup", () => isDrawing = false);
+        //     canvas.addEventListener("mousemove", (e) => {
+        //         if (!isDrawing) return;
+        //         const rect = canvas.getBoundingClientRect();
+        //         const x = e.clientX - rect.left;
+        //         const y = e.clientY - rect.top;
+        //         ctx.globalCompositeOperation = "destination-out";
+        //         ctx.beginPath();
+        //         ctx.arc(x, y, 20, 0, Math.PI * 2);
+        //         ctx.fill();
+        //     });
+        // }
+
+
+        function createScratchEffect() {
+            const canvas = document.getElementById("scratchCanvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = 300;
+            canvas.height = 150;
+            ctx.fillStyle = "gray";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            let isDrawing = false;
+            function startDrawing(e) {
+                isDrawing = true;
+                scratch(e);
+            }
+            function stopDrawing() {
+                isDrawing = false;
+            }
+            function scratch(e) {
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+                ctx.globalCompositeOperation = "destination-out";
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            canvas.addEventListener("mousedown", startDrawing);
+            canvas.addEventListener("mouseup", stopDrawing);
+            canvas.addEventListener("mousemove", scratch);
+
+            canvas.addEventListener("touchstart", startDrawing);
+            canvas.addEventListener("touchend", stopDrawing);
+            canvas.addEventListener("touchmove", scratch);
+        }
+
+        loadQuestion();
+    </script>
+</body>
+
+</html>
