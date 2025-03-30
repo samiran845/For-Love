@@ -175,8 +175,10 @@
                 document.getElementById("option1").style.display = "block";
                 document.getElementById("option2").style.display = "block";
             } else {
+                let message = "I am really sorry baby. My head was not working. I am really sorry. I only love you, only you. I love you so much. And I am sorry."
                 document.getElementById("quiz-container").innerHTML = "<div class='heart'><div class='emessage'>I am really sorry baby. My head was not working. I am really sorry. I only love you, only you. I love you so much. And I am sorry. ❤️😘</div></div>";
                 document.querySelector(".reward-button").style.display = "block";
+                speakMessage(message);
             }
         }
 
@@ -272,6 +274,16 @@
             canvas.addEventListener("touchstart", startDrawing);
             canvas.addEventListener("touchend", stopDrawing);
             canvas.addEventListener("touchmove", scratch);
+        }
+
+
+        function speakMessage(text) {
+            let speech = new SpeechSynthesisUtterance(text);
+            speech.lang = 'en-US';
+            speech.rate = 1;
+            speech.pitch = 1;
+            speech.voice = speechSynthesis.getVoices().find(voice => voice.name.includes('Male')) || speechSynthesis.getVoices()[0];
+            speechSynthesis.speak(speech);
         }
 
         loadQuestion();
